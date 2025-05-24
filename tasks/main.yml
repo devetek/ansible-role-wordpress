@@ -1,0 +1,9 @@
+---
+- include_tasks: install.yml
+  when: wordpress_action == "install"
+
+- include_tasks: reinstall.yml
+  when: wordpress_action == "reinstall"
+
+- include_tasks: uninstall.yml
+  when: wordpress_action == "uninstall"

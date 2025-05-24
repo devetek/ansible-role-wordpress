@@ -1,0 +1,72 @@
+---
+- include_tasks: uninstall.yml
+
+- name: Check if Wordpress exist
+  stat:
+    path: "{{ wordpress_directory }}"
+  register: app_folder
+
+- block:
+    - name: Creates directory for domain web files
+      file:
+        path: "{{ wordpress_directory }}"
+        state: directory
+
+    # installing WordPress via wp-cli
+    - name: Is WordPress already downloaded
+      stat:
+        path: "{{ wordpress_directory }}/wp-load.php"
+      register: wp_downloaded
+
+    - name: Download WordPress to domain directory via wp-cli
+      command: wp core download --locale={{ wordpress_locale }}
+      args:
+        chdir: "{{ wordpress_directory }}"
+      when: wp_downloaded.stat.exists == false
+
+    - name: Is WordPress config already setup
+      stat:
+        path: "{{ wordpress_directory }}/wp-config.php"
+      register: wp_configured
+
+    - name: Setup WordPress Config using wp-cli
+      command: wp config create --dbname={{ wordpress_db_name|quote }} --dbuser={{ wordpress_db_user|quote }} --dbpass={{wordpress_db_password|quote}}
+      args:
+        chdir: "{{ wordpress_directory }}"
+      when: wp_configured.stat.exists == false
+
+    - name: Is WordPress already installed in {{ wordpress_directory }}
+      command: wp core is-installed
+      args:
+        chdir: "{{ wordpress_directory }}"
+      register: wp_installed
+      ignore_errors: true
+
+    - name: "Print install status"
+      debug:
+        msg: "{{ wp_installed }}"
+
+    - name: Install WordPress using wp-cli
+      command: wp core install --url={{ wordpress_domain|quote }} --title={{ wordpress_title|quote }} --admin_user={{ wordpress_user_admin|quote }} --admin_password={{ wordpress_user_admin_password|quote }} --admin_email={{ wordpress_user_email|quote }}
+      args:
+        chdir: "{{ wordpress_directory }}"
+      when: >
+        (wp_installed.skipped is undefined or not wp_installed.skipped)
+        and 'Error:' not in wp_installed.stderr
+        and wp_installed.rc != 0
+        and (wordpress_install_type is undefined or wordpress_install_type == 'singlesite')
+
+    - name: Install WordPress Multisite using wp-cli
+      command: wp core multisite-install --url={{ wordpress_domain|quote }} --title={{ wordpress_title|quote }} {{ (wordpress_multisite_network_type is defined and wordpress_multisite_network_type == 'subdomain') | ternary('--subdomains', '') }} --admin_user={{ wordpress_user_admin|quote }} --admin_password={{ wordpress_user_admin_password|quote }} --admin_email={{ wordpress_user_email|quote }}
+      args:
+        chdir: "{{ wordpress_directory }}"
+      when: >
+        (wp_installed.skipped is undefined or not wp_installed.skipped)
+        and 'Error:' not in wp_installed.stderr
+        and wp_installed.rc != 0
+        and wordpress_install_type is defined
+        and wordpress_install_type == 'multisite'
+
+  become: true
+  become_user: "{{ wordpress_user_linux }}"
+  when: app_folder.stat.exists == false

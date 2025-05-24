@@ -1,0 +1,14 @@
+---
+# validate app folder
+- name: Check if Wordpress exist
+  ansible.builtin.stat:
+    path: "{{ wordpress_directory }}"
+  register: app_folder
+
+# Delete folder app
+- block:
+    - name: Delete directory for domain web files
+      ansible.builtin.file:
+        path: "{{ wordpress_directory }}"
+        state: absent
+  when: app_folder.stat.exists == true

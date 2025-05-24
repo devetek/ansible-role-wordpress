@@ -1,0 +1,27 @@
+galaxy_info:
+  role_name: wordpress
+  namespace: devetek
+  author: prakasa1904
+  description: Roles to download wordpress and extract to the server 
+  company: Devetek
+  license: license (GPL-2.0-or-later, MIT, etc)
+  min_ansible_version: "2.1"
+
+  platforms:
+  - name: Debian
+    versions:
+      - bookworm
+      - bullseye
+      - buster
+
+  - name: Ubuntu
+    versions:
+      - bionic
+      - jammy
+      - focal
+
+  galaxy_tags:
+    - wordpress
+    - php-fpm
+
+dependencies: []
