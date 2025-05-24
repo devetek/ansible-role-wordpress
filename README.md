@@ -26,13 +26,8 @@ wordpress_user_email: support@devetek.com
 wordpress_title: My Wordpress Site
 
 wordpress_domain: wordpress.devetek.app
-wordpress_domain_dir: wordpress-devetek-app
 
-wordpress_directory: /var/www
-wordpress_log_directory: /var/log
-
-# Socket listener
-wordpress_fpm_listen: "127.0.0.1"
+wordpress_directory: /var/www/wordpress
 
 # Database configuration
 wordpress_db_host: localhost
@@ -44,6 +39,7 @@ wordpress_db_password: password_mywp
 wordpress_install_type: singlesite
 # installation for multisites. Available options: subdirectory, subdomain
 wordpress_multisite_network_type: subdomain
+
 ```
 
 Dependencies
