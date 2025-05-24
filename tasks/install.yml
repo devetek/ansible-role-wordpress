@@ -4,12 +4,6 @@
     path: "{{ wordpress_directory }}"
   register: app_folder
 
-- name: Create PHP fpm config
-  ansible.builtin.template:
-    src: php-fpm
-    dest: "/etc/php/{{ wordpress_php_version }}/fpm/pool.d/{{ wordpress_domain_dir }}.conf"
-    mode: 0644
-
 - block:
     - name: Creates directory for domain web files
       file:

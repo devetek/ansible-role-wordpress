@@ -15,7 +15,6 @@ List of variables in ansible-role-wordpress:
 
 ```yaml
 ---
-wordpress_php_version: 8.2
 wordpress_action: install
 wordpress_locale: en_US
 wordpress_user_linux: root
